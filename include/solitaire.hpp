@@ -32,3 +32,14 @@ class MCSimulator{
         std::vector<uint32_t> root_scores;
         std::vector<Move> move_tree;
 };
+
+
+class ManualAssistant{
+    public:
+        ManualAssistant();
+        void enterStartingCards();
+        void showSimMovesScores();
+        void selectMove();
+    private:
+        MCSimulator sim;
+};
