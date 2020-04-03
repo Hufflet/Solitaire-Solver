@@ -22,13 +22,13 @@ ALL : MAIN TEST
 $(MAIN_EXE) : $(MAIN_OBJECTS)
 	g++ -o $@ $^
 
-$(TEST_EXE) : $(MAIN_OBJECTS)
+$(TEST_EXE) : $(TEST_OBJECTS)
 	g++ -o $@ $^
 
 build/%.o : src/%.cpp
 	@echo Compiling ... $@
 	g++ -O3 -Wall -o $@ -c $^
 
-build/%.o : test/5.cpp
+build/%.o : test/%.cpp
 	@echo Compiling ... $@
-	g++ -O3 -Wall -o @$ -c $^
+	g++ -O3 -Wall -o $@ -c $^
