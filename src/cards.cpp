@@ -27,6 +27,10 @@ void Card::makeKnown(){
     state |= KNOWN_BITS;
 }
 
+bool Card::isKnown(){
+    return state & KNOWN_BITS;
+}
+
 
 Hand::Hand(){
     cur = cards;
@@ -41,7 +45,7 @@ bool Hand::canFlip(){
 
 #ifdef CAN_RESET
     bool Hand::canReset(){
-        return num_resets < MAX_NUM_RESETS;
+        return (num_resets < MAX_NUM_RESETS) && (!canFlip());
     }
 #endif
 
