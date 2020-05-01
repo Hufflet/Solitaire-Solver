@@ -7,6 +7,10 @@ Card::Card(){
     state = 0;  // indicates blank/no card
 }
 
+uint8_t Card::getSuit(){
+    return (state & 0b110000)>>4;
+}
+
 void Card::setState(bool known, uint8_t suit, uint8_t rank){
     state = (known<<6) + (suit<<4) + rank;
 }
@@ -34,62 +38,120 @@ bool Card::isKnown(){
 
 Hand::Hand(){
     cur = cards;
-    num_discard = 0;
-    num_remain = 0;
+    last_card = cur + HAND_SIZE;
     num_resets = 0;
 }
 
 bool Hand::canFlip(){
-    return num_remain;
+    return cur < last_card;
 }
 
-#ifdef CAN_RESET
-    bool Hand::canReset(){
-        return (num_resets < MAX_NUM_RESETS) && (!canFlip());
-    }
-#endif
+bool Hand::canReset(){
+    return (num_resets < MAX_NUM_RESETS) && (!canFlip());
+}
 
-void Hand::flip(){
+uint8_t Hand::flip(uint8_t num_to_flip){
     uint8_t counter = 0;
-    while(DRAW_SIZE-counter){
+    while(num_to_flip){
         cur++;
         if((*cur).getValue()){
+            num_to_flip--;
             counter++;
-            num_remain--;
-            num_discard++;
         }
-        if(!num_remain){
+        if(cur == last_card){
             break;
         }
     }
+    return counter;
 }
 
 void Hand::reset(){
     cur = cards;
-    num_remain += num_discard;
-    num_discard = 0;
-    num_resets += 1;
+    num_resets++;
 }
 
-void Hand::placeCard(uint8_t pos, Card c){
+void Hand::placeCard(uint8_t pos, Card c, LocTable loc_t){
     cards[pos] = c;
-    if(pos>(cur-cards)){
-        num_remain++;
-    }
-    else{
-        num_discard++;
+    loc_t.move(c, 0);
+}
+
+void Hand::replaceUnknowns(RootDeck rd, LocTable loc_t){
+    for(Card* p = cards+1; p < last_card; p++){
+        if((*p).getValue() && !(*p).isKnown()){
+            *p = rd.getNextUnknown();
+            loc_t.move(*p, 0);
+        }
     }
 }
 
-void Hand::replaceUnknowns(RootDeck rd){
-    for(Card* p = cards; p < cards+HAND_SIZE; p++){
-        *p = rd.getNextUnknown();
-    }
-}
-
-Card Hand::get(){
+Card Hand::readTop(){
     return *cur;
 }
+
+void Hand::unFlip(uint8_t num_to_unflip){
+    while(num_to_unflip){
+        cur--;
+        if((*cur).getValue()){
+            num_to_unflip--;
+        }
+    }
+}
+
+void Hand::unReset(){
+    num_resets--;
+    cur = last_card;
+}
+
+Card Hand::takeTop(){
+    Card c = *cur;
+    (*cur).clear();
+
+    if(cur < last_card){
+        while(!(*cur).getValue()){
+            cur++;
+        }
+    }
+
+    else{
+        while(!(*cur).getValue()){
+            cur--;
+            if(cur==cards){
+                break;
+            }
+        }
+        last_card = cur;
+    }
+
+    return c;
+}
+
+void Hand::unTakeTop(Card c, uint8_t num){
+    cur = cards + num;
+    *cur = c;
+}
+
+uint8_t Hand::getPos(){
+    return cur-cards;
+}
+
+void Hand::revealDraw(Card c1, Card c2, Card c3, LocTable loc_t){
+    loc_t.move(c1, 0);
+    *cur = c1;
+    if(c2.getValue()){
+        loc_t.move(c2, 0);
+        unFlip(1);
+        *cur = c2;
+        if(c3.getValue()){
+            loc_t.move(c3, 0);
+            unFlip(1);
+            *cur = c3;
+            flip(1);
+        }
+        flip(1);
+    }
+}
+
+
 
 
 RootDeck::RootDeck(){
@@ -138,12 +200,6 @@ Card RootDeck::getNextUnknown(){
 }
 
 
-LocTable::LocTable(){
-    for(uint8_t* i=locs; i<locs+LOC_TABLE_SIZE; i++){
-        *i = 0;
-    }
-}
-
 uint8_t LocTable::find(Card c){
     return locs[c.getValue()];
 }
@@ -154,7 +210,6 @@ void LocTable::move(Card c, uint8_t loc){
 
 
 Tableau::Tableau(){
-    first_faceup = cards;
     first_open = cards;
 }
 
@@ -166,33 +221,28 @@ bool Tableau::hasCards(){
     return first_open > cards;
 }
 
-void Tableau::addFrom(Tableau base, LocTable loc_t){
-    Card c = base.popTop();
-    // if there is already a card here...
-    uint8_t num_to_move = (*(first_open-1)).getRank()-c.getRank();
-    // if no card here...
-    if(!hasCards()) num_to_move = 14 - c.getRank();
-    
-    Card* i = first_faceup + num_to_move - 1;
-    *i = c;
-    for(uint8_t N=1; N<num_to_move; N++){
-        c = base.popTop();
-        *(i-N) = c;
+void Tableau::addFrom(Tableau base, uint8_t num, LocTable loc_t){
+    for(uint8_t i=num; i; i--){
+        *(first_open+i-1) = base.popTop();
     }
-    
-    first_open = i+1;
+    first_open += num;
 }
 
-void Tableau::replaceUnknowns(RootDeck rd){
-    for(Card* p = cards; p<cards+20; p++){
-        *p = rd.getNextUnknown();
+void Tableau::replaceUnknowns(RootDeck rd, LocTable loc_t){
+    if(hasCards()){
+        for(Card* p = first_open-1; p>=cards; p--){
+            if(!(*p).isKnown()){
+                *p = rd.getNextUnknown();
+                loc_t.move(*p, loc);
+            }
+        }
     }
 }
 
 void Tableau::addCard(Card c, LocTable loc_t){
-    loc_t.move(c, loc);
     *first_open = c;
     first_open++;
+    loc_t.move(c, loc);
 }
 
 Card Tableau::popTop(){
@@ -203,8 +253,13 @@ Card Tableau::popTop(){
 }
 
 
+
 Foundation::Foundation(){
     first_open = cards;
+}
+
+void Foundation::setLoc(uint8_t loc){
+    this->loc = loc;
 }
 
 bool Foundation::isFull(){
@@ -212,9 +267,9 @@ bool Foundation::isFull(){
 }
 
 void Foundation::addCard(Card c, LocTable loc_t){
-    loc_t.move(c, loc);
     *first_open = c;
     first_open++;
+    loc_t.move(c, loc);
 }
 
 Card Foundation::popTop(){

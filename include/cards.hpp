@@ -6,11 +6,13 @@
 class Card{
     public:
         Card();
-        void setState(bool known, uint8_t suit, uint8_t rank);
         uint8_t getValue();
         uint8_t getRank();
-        void clear();
-        void makeKnown();
+        void    setState(bool known, uint8_t suit, uint8_t rank);
+        void    clear();
+        void    makeKnown();
+        bool    isKnown();
+        uint8_t getSuit();
     private:
         uint8_t state;
 };
@@ -33,30 +35,32 @@ class Hand{
     public:
         Hand();
         bool canFlip();
-        void flip();
-        #ifdef CAN_RESET
-            bool canReset();
-            void reset();
-        #endif
-        void placeCard(uint8_t index, Card);
-        void replaceUnknowns(RootDeck rd);
-        Card get();
+        uint8_t flip(uint8_t num_to_flip);
+        void unFlip(uint8_t num_to_unflip);
+        bool canReset();
+        void reset();
+        void unReset();
+        void placeCard(uint8_t pos, Card, LocTable);
+        void replaceUnknowns(RootDeck rd, LocTable);
+        Card readTop();
+        Card takeTop();
+        void unTakeTop(Card, uint8_t num);
+        uint8_t getPos();
+        void revealDraw(Card, Card, Card, LocTable);
     private:
         Card cards[HAND_SIZE+1];
         Card* cur;
-        uint8_t num_discard;
-        uint8_t num_remain;
+        Card* last_card;
         uint8_t num_resets;
 };
 
 
 class LocTable{
     public:
-        LocTable();
         uint8_t find(Card);
         void move(Card, uint8_t loc);
     private:
-        uint8_t locs[LOC_TABLE_SIZE];
+        uint8_t locs[LOC_TABLE_SIZE] = {0};
 };
 
 
@@ -65,13 +69,12 @@ class Tableau{
         Tableau();
         void setLoc(uint8_t loc);
         bool hasCards();
-        void addFrom(Tableau base, LocTable loc_t);
-        void replaceUnknowns(RootDeck rd);
+        void addFrom(Tableau base, uint8_t num, LocTable loc_t);
+        void replaceUnknowns(RootDeck rd, LocTable);
         void addCard(Card, LocTable loc_t);
         Card popTop();
     private:
         Card cards[TABLEAU_SIZE];
-        Card* first_faceup;
         Card* first_open;
         uint8_t loc;
 };
@@ -82,10 +85,22 @@ class Foundation{
         Foundation();
         void setLoc(uint8_t);
         bool isFull();
-        void addCard(Card, LocTable loc_t);
+        void addCard(Card, LocTable);
         Card popTop();
+        Card readTop();
     private:
         Card cards[FOUNDATION_SIZE];
         Card* first_open;
         uint8_t loc;
+};
+
+
+class LoopTracker{
+    public:
+        void markAonB(Card, Card);
+        void clearParents(Card);
+        bool isClearAonB(Card, Card);
+    private:
+        uint8_t type0[64] = {0};
+        uint8_t type1[64] = {0};
 };

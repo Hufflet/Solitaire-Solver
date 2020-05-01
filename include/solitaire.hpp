@@ -4,12 +4,10 @@
 
 class Move{
     public:
-        uint8_t from;
         uint8_t to;
-        uint8_t hand_pos;
-        bool caused_flip;
-        bool is_active;
-        uint8_t type;
+        uint8_t from;
+        uint8_t num;
+        uint8_t type;num_
 };
 
 
@@ -18,21 +16,28 @@ class MCSimulator{
         MCSimulator();
         void makeMove(Move);
         void revealCard(Card, uint8_t loc);
-        void revealDraw(Card);
-        void revealDraw(Card, Card);
-        void revealDraw(Card, Card, Card);
+        void revealDraw(Card c1, Card c2=Card(), Card c3=Card());
         Move getBestMove();
+    
     private:
-        Hand hand;
-        RootDeck root;
-        LocTable loc_t;
-        Tableau layout[7];
-        Foundation reserve[4];
         void shuffleDealUnknowns();
         void undoMove(Move);
-        std::vector<Move> root_moves;
-        std::vector<uint32_t> root_scores;
-        std::vector<Move> move_tree;
+        uint8_t rateMove(Move);
+        std::vector<Move> getPossibleMoves();
+        RootDeck root;
+        Hand hand;
+        LocTable loc_t;
+        LocTable tab_lead_t;
+        Tableau layout[7];
+        Foundation reserve[4];
+        uint8_t max_num_resets;
+        uint8_t draw_size;
+        uint8_t reserveVals[64] = {0};
+        LoopTracker loop_t;
+        uint8_t kings_set;
+        uint8_t tabs_free;
+        uint8_t num_kings_set;
+        uint8_t num_tabs_free;
 };
 
 

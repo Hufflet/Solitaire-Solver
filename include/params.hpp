@@ -1,8 +1,5 @@
 #pragma once
 
-#define CAN_RESET
-#define MAX_NUM_RESETS 3
-#define DRAW_SIZE 3
 //#define FLIP_3
 #define HAND_SIZE 52-(7+6+5+4+3+2+1)
 
