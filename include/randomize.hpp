@@ -2,10 +2,8 @@
 
 #include <cstdint>
 
-extern uint64_t PRNG_SEED;
-extern uint32_t* PRNG_SEED_UPPER_HALF;
+template <class T1, class T2>
+void shuffleArray(T1* array, T2 len);
 
-uint32_t xorshiftStar32();
-void     shuffleBytes(uint8_t* start, uint8_t len);
-
-#define rand32() xorshiftStar32()
+template <class T1, class T2>
+void permuteArray(T1* array, T2 len);
