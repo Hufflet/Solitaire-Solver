@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+template <class T>
+void swap(T *A, T *B);
+
 template <class T1, class T2>
 void shuffleArray(T1* array, T2 len);
 
