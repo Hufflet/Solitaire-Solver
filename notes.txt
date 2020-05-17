@@ -1,0 +1,16 @@
+Updating position in location table
+- happens where the card is actually placed
+
+locations:
+- hand: 0
+- tabs: 1-7 (left to right)
+- fnds: 8-11 (in order of suit)
+
+Push-Pull method
+- each move has a from (push) and a to (pull)
+- for the push location
+  - if tab, set push to true, pull to false
+  - if fnd, set push to true, pull to false
+- for the pull location
+  - if tab, set pull to false, keep push what it was
+  - if fnd, set pull to true, push to false
