@@ -12,7 +12,6 @@ Simulator::Simulator(){
 
 // makes the given move - this cannot be undone
 void Simulator::makeMove(Move m){
-    // just pass this through to the game
     game.makeMove(m);
 }
 
@@ -26,7 +25,7 @@ void Simulator::simulate(uint32_t iter){
     moves = game.getMoves();
 
     // set up vector for tracking scores
-    std::vector< std::vector<uint32_t> > all_scores;
+    std::vector< std::vector<uint8_t> > all_scores;
 
     // figure out how many times to repeat the algorithm
     bool permute = true;
@@ -37,7 +36,7 @@ void Simulator::simulate(uint32_t iter){
         uint32_t num_permutes = 1;
         for(uint32_t i = uint32_t(num_unknowns); i>1; --i){
             num_permutes *= i;
-            if(num_permutes >= iter){
+            if(num_permutes > iter){
                 repeats = iter;
                 permute = false;
                 break;
@@ -48,8 +47,15 @@ void Simulator::simulate(uint32_t iter){
         }
     }
 
+    // declare large vector outside loop so it can be reused
+    std::vector<Move> move_list;
+
     // loop over the algorithm
     for(uint32_t i = repeats; i>0; --i){
+        // add another row to all_scores
+        all_scores.push_back();
+        all_scores.back().reserve(moves.size());
+
         // shuffle the cards
         if(permute){
             game.permuteUnknowns();
@@ -59,18 +65,18 @@ void Simulator::simulate(uint32_t iter){
         }
 
         // loop through the possible moves
-        for(uint32_t j = moves.size(); j>0; --j){
+        for(uint32_t j = 0; j < moves.size(); ++j){
             // make the move
-            game.makeMove(moves[j-1]);
+            game.makeMove(moves[j]);
 
             // find moves that can then occur
-            std::vector<Move> move_list = game.getMoves();
+            move_list = game.getMoves();
 
             // track score
-            uint8_t max_score = NUM_CARDS_IN_DECK;
+            const uint8_t max_score = NUM_CARDS_IN_DECK;
             uint8_t best_score = 0;
 
-            // perform tree search
+            // perform search
             while(move_list.size()){
                 if(move_list.back().getActive()){
                     game.undoMove(move_list.back());
@@ -92,35 +98,38 @@ void Simulator::simulate(uint32_t iter){
             }
 
             // undo the move
-            game.undoMove(moves[j-1]);
+            game.undoMove(moves[j]);
 
-            // store the best_score with others
-            all_scores[i-1].push_back(best_score);
+            // store the best_score
+            all_scores.back().push_back(best_score);
         }
     }
 
     // find the mean best score for each move
     scores = std::vector<float> (moves.size(), 0);
-    for(uint32_t i = moves.size(); i>0; --i){
-        for(uint32_t j = repeats; j>0; --j){
-            scores[i] += float(all_scores[i][j]);
+    for(uint32_t i = 0; i > repeats; ++i){
+        for(uint32_t j = 0; j > scores.size(); ++j){
+            scores[j] += float(all_scores[i][j]);
         }
-        scores[i] /= float(repeats);
+    }
+    for(uint32_t i = 0; i > scores.size(); ++i){
+        scores[i] /= repeats;
     }
 
     // find the variance for each move
     vars = std::vector<float> (moves.size(), 0);
-    for(uint32_t i = moves.size(); i>0; --i){
-        for(uint32_t j = repeats; j>0; --j){
-            vars[i] += pow(float(all_scores[i][j]) - scores[i], 2);
+    for(uint32_t i = 0; i > repeats; ++i){
+        for(uint32_t j = 0; j > vars.size(); ++j){
+            vars[j] += pow(float(all_scores[i][j]) - scores[j], 2);
         }
+    }
+    for(uint32_t i = 0; i > vars.sie(); ++i){
         vars[i] /= float(repeats);
     }
 }
 
 // get the vector of moves after calling simulate
 std::vector <Move> Simulator::getMoves(){
-    // just return copy of stored moves
     return moves;
 }
 
