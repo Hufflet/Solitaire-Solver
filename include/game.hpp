@@ -54,6 +54,9 @@ class Game{
         // applies to all unknown cards in hand and tableau
         void permuteUnknowns();
 
+        // returns number of cards in all foundations
+        uint8_t getScore();
+        
     private:
         Deck deck;
         Foundation foundations[NUM_SUITS];

@@ -30,8 +30,8 @@ class Simulator{
         // get the vector of average scores after calling simulate
         std::vector <float> getMeanScores();
 
-        // get the vector of standard deviations after calling simulate
-        std::vector <float> getStandardDeviations();
+        // get the vector of variances after calling simulate
+        std::vector <float> getVariances();
 
         // place a known card at the given location/position
         void placeKnown(Card, uint8_t loc, uint8_t pos);
@@ -40,5 +40,5 @@ class Simulator{
         Game game;
         std::vector <Move> moves;
         std::vector <float> scores;
-        std::vector <float> stds;
+        std::vector <float> vars;
 };

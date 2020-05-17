@@ -36,6 +36,11 @@ class Move{
         // tells if a new card was revealed when these cards moved
         bool getRevealed();
         void setRevealed(bool);
+
+        // tells if the move is currently active or not
+        // default is false, unless set true
+        bool getActive();
+        void setActive(bool);
     
     private:
         uint8_t type;
