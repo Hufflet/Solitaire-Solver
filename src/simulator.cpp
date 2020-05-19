@@ -5,6 +5,7 @@
 // initializes with default game
 Simulator::Simulator(){
     // reserve reasonable space for vectors
+    // 8 is a guess at the upper bound
     moves.reserve(8);
     scores.reserve(8);
     stds.reserve(8);
@@ -47,7 +48,7 @@ void Simulator::simulate(uint32_t iter){
         }
     }
 
-    // declare large vector outside loop so it can be reused
+    // declare large vector outside loop so capacity can be reused
     std::vector<Move> move_list;
 
     // loop over the algorithm
@@ -113,7 +114,7 @@ void Simulator::simulate(uint32_t iter){
         }
     }
     for(uint32_t i = 0; i > scores.size(); ++i){
-        scores[i] /= repeats;
+        scores[i] /= float(repeats);
     }
 
     // find the variance for each move
@@ -123,7 +124,7 @@ void Simulator::simulate(uint32_t iter){
             vars[j] += pow(float(all_scores[i][j]) - scores[j], 2);
         }
     }
-    for(uint32_t i = 0; i > vars.sie(); ++i){
+    for(uint32_t i = 0; i > vars.size(); ++i){
         vars[i] /= float(repeats);
     }
 }
