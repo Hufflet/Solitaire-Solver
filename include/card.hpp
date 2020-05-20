@@ -34,6 +34,15 @@ class Card{
         // isKnown = false; rank = 15; value = 4;
         void generic();
 
+        // returns child card, takes in 0 or 1
+        Card getChild(bool);
+
+        // returns parent card, takes in 0 or 1
+        Card getParent(bool);
+
+        // returns other color (zeroth suit of other color)
+        uint8_t getOtherColor();
+
     private:
         uint8_t state;
 };

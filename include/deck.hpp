@@ -1,6 +1,7 @@
 #pragma once
 
 #include "card.hpp"
+#include "params.hpp"
 
 
 class Deck{
@@ -12,7 +13,7 @@ class Deck{
     to the start of the array. Shuffling only occurs on end of array.
     */
     public:
-        // default Deck contains the 52 standard cards, each unknown
+        // default Deck contains the 52 standard cards, all unknown
         Deck();
 
         // finds the given card in the deck and marks it as known
@@ -30,6 +31,9 @@ class Deck{
         // returns the current unknown card
         // adjusts internal counter to prepare for the next call
         Card getNextUnknown();
+
+        // returns number of unknown cards
+        uint8_t numUnknown();
     
     private:
         // array of all cards in the deck

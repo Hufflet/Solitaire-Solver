@@ -19,6 +19,7 @@ class Foundation{
 
         // Sets the location [8-11]
         void setLocation(uint8_t);
+        uint8_t getLocation();
 
         // returns if the foundation is empty
         void isEmpty();
@@ -28,7 +29,7 @@ class Foundation{
 
         // adds card to foundation
         // updates LocationTable for card
-        void addCard(Card, LocationTable);
+        void addCard(Card, LocationTable*);
 
         // returns copy of top card
         // assumes there is a top card
@@ -38,6 +39,16 @@ class Foundation{
         // assumes there is a top card
         // removes top card from foundation
         Card takeTop();
+
+        // returns distance of card from top (1)
+        uint8_t getPosition(Card);
+
+        // puts a given card in a specific position
+        // overwrites whatever was there
+        void placeCard(Card, uint8_t pos, LocationTable*);
+
+        // returns number of cards currently in foundation
+        uint8_t numCards();
 
     private:
         // array of cards

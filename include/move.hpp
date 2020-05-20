@@ -23,11 +23,11 @@ class Move{
 
         // move type as defined in params
         uint8_t getType();
-        void setType();
+        void setType(uint8_t);
 
         //number of cards to move
         uint8_t getNumCards();
-        void setNumCards();
+        void setNumCards(uint8_t);
 
         // PushPull state tells state before move is made
         uint32_t getPushPull();
@@ -41,6 +41,12 @@ class Move{
         // default is false, unless set true
         bool getActive();
         void setActive(bool);
+
+        // tells which locations push/pull
+        uint8_t getPush();
+        void setPush(uint8_t);
+        uint8_t getPull();
+        void setPull(uint8_t);
     
     private:
         uint8_t type;

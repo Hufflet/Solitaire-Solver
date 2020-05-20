@@ -14,3 +14,12 @@ Push-Pull method
 - for the pull location
   - if tab, set pull to false, keep push what it was
   - if fnd, set pull to true, push to false
+
+Move
+- type
+  - if moving, need push/pull locations
+    - need to know if new card was revealed
+    - need to know how many moved if new card was revealed
+  - if flipping, need number that are flipped
+  - if resetting, don't really need much
+- for all cases, need to know the push-pull state before move

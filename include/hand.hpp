@@ -19,8 +19,11 @@ class Hand{
     public:
         // num_resets tells how many times the hand can be reset
         // num_flip tells how many cards are typically flipped per draw
-        Hand(uint8_t num_resets, uint8_t num_flip);
-
+        // initialized with mock cards
+        Hand();
+        void setNumResets();
+        void setNumFlip();
+        
         // returns how many cards can currently flip
         // given in range [0, num_flip]
         uint8_t howManyCanFlip();

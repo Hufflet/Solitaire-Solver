@@ -22,17 +22,17 @@ class Game{
     where known cards are.
     */
     public:
-        // initialized as blank game, missing the top card of each tableau
+        // initialized as blank game, all cards are mock
         Game();
 
         // returns number of unknown cards
-        uint8_t numUnknownCards();
+        uint8_t numUnknown();
 
         // sets parameters so that all legal moves from this state are found
         void resetRestrictions();
 
         // finds moves from this state
-        std::vector <Move> getMoves();
+        std::vector<Move> getMoves();
 
         // makes the move, updates state and restrictions accordingly
         // assumes the move is possible from this state
@@ -64,4 +64,5 @@ class Game{
         LocationTable loc_table;
         PushPull push_pull;
         Tableau tableaus[NUM_TABLEAUS];
+        uint8_t empty_tableau;
 };

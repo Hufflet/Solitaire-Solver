@@ -31,7 +31,7 @@ void Simulator::simulate(uint32_t iter){
     // figure out how many times to repeat the algorithm
     bool permute = true;
     uint32_t repeats = 1;
-    uint8_t num_unknowns = game.numUnknownCards();
+    uint8_t num_unknowns = game.numUnknown();
     // factorial could be VERY large, so only do as much as needed
     if(num_unknowns > 1){
         uint32_t num_permutes = 1;

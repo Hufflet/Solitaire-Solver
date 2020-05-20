@@ -20,20 +20,19 @@ class Tableau{
         // given position should be between 1 and 7
         void setLocation(uint8_t loc);
 
-        // fills the Tableau with default unknown cards
-        // does not put the top card visible at the beginning of the game
-        void fillUnknown(Deck);
+        // fills the Tableau with mock cards
+        void fillMock();
 
         // returns if there are any cards in the Tableau
         bool hasCards();
 
         // places given card on top of the Tableau
         // updates the card location in LocationTable
-        void addCard(Card, LocationTable);
+        void addCard(Card, LocationTable*);
 
         // moves given number of cards from given Tableau to self
         // updates the card locations in LocationTable
-        void addFrom(Tableau, uint8_t num, LocationTable);
+        void addFrom(Tableau, uint8_t num, LocationTable*);
 
         // returns copy of top card
         // assumes that there is a top card (hasCards returns true)
@@ -46,6 +45,20 @@ class Tableau{
 
         // replaces unknown cards with ones from Deck
         void replaceUnknowns(Deck);
+
+        // returns location
+        uint8_t getLocation();
+
+        // tells if removing num cards would reveal an unknown card
+        bool wouldReveal(uint8_t num);
+
+        // tells position of card from top (1)
+        // assumes card is in tableau
+        uint8_t getPosition(Card);
+
+        // puts a given card in a specific position
+        // overwrites whatever was there
+        void placeCard(Card, uint8_t pos, LocationTable*);
 
     private:
         // array of cards in Tableau
