@@ -11,48 +11,40 @@ class PushPull{
     a card(s) from one location (push) to another location (pull).
     
     Logic:
-        push:   if tableau, set push to false, pull to false
-                if foundation, set push to true, pull to false
-        pull:   if tableau, set pull to true, push to false
-                if foundation, set pull to true, push to false
+        push:   if tableau, set push/pull to false/false
+                if foundation, set push/pull to true/false
+        pull:   if tableau, set push/pull to false/true
+                if foundation, set push/pull to false/true
     
-    The game begins with all tableaus being able to push. If a card is revealed
-    in the tableau, set push and pull to true. If a card moves into the tableau
-    from hand or foundation, set pull to true and push to false.  
+    The game begins with all tableaus and foundations being able to pull. If a
+    card is revealed in the tableau, set push/pull to true/true. If a card
+    moves into the tableau, set push/pull to false/true. Drawing or resetting
+    sets all push/pull to false/false.
     */
     public:
-        // initialized with all tableau pushes true, rest false
+        // initialized with all push/pull to false/true
         PushPull();
 
-        // modifies push and pull arrays according to given logic
+        // Push: indicates if location can push its top card to other location
+        bool getPush(uint8_t loc);
+        void setPush(uint8_t loc, bool);
+        void setAllPush(bool);
+        bool anyPushTrue();
+
+        // Pull: indicates if location can pull card(s) from other location
+        bool getPull(uint8_t loc);
+        void setPull(uint8_t loc, bool);
+        void setAllPull(bool);
+        bool anyPullTrue();
+
+        // Update: given push/pull locations, modify according to above logic
         void update(uint8_t push_loc, uint8_t pull_loc);
 
-        // returns if given location can push
-        bool canPush(uint8_t loc);
-
-        // returns if given location can pull
-        bool canPull(uint8_t loc);
-
-        // sets all pushes to true, rest false
-        void reset();
-
-        // returns a 32bit number storing the states
+        // State: 32-bit number storing encoded push/pull data
         uint32_t getState();
         void setState(uint32_t);
-
-        // returns if at least one push or pull value is true
-        bool anyPushOrPull();
-
-        // sets all pushes or pulls to given value
-        void setAllPush(bool);
-        void setAllPull(bool);
-        void setPush(uint8_t, bool);
-        void setPull(uint8_t, bool);
     
     private:
-        // array indicating if locations can push
         bool push[NUM_LOCATIONS];
-
-        // array indicating if locations can pull
         bool pull[NUM_LOCATIONS];
 };
